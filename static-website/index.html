@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Upload Form</title>
+  <style>
+    * {
+      box-sizing: border-box; /* Includes padding and borders in the element's width */
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      color: #555;
+      font-weight: bold;
+    }
+
+    input[type="email"],
+    input[type="file"],
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 16px;
+      box-sizing: border-box; /* Ensures consistent padding inside the form */
+    }
+
+    input[type="email"]:focus,
+    input[type="file"]:focus {
+      outline: none;
+      border-color: #0077cc;
+    }
+
+    button {
+      background-color: #0077cc;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+  </style>
+</head>
+<body>
+
+  <form id="uploadForm" enctype="multipart/form-data" method="POST">
+    <h1>Upload Your File</h1>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+    <label for="file">Choose file:</label>
+    <input type="file" id="file" name="file" accept=".xlsx,.xls,.csv" required>
+
+    <button type="submit">Upload</button>
+  </form>
+
+  <script>
+    document.getElementById("uploadForm").onsubmit = async function(event) {
+      event.preventDefault();
+
+      const fileInput = document.getElementById("file").files[0];
+      const email = document.getElementById("email").value;
+
+      if (!fileInput || !email) {
+        alert("Please select a file and enter your email address.");
+        return;
+      }
+
+      // Placeholder code for development:
+      const presignedUrl = "YOUR_S3_PRESIGNED_URL"; // Replace with actual pre-signed URL
+
+      try {
+        const response = await fetch(presignedUrl, {
+          method: "PUT",
+          body: fileInput,
+        });
+
+        if (response.ok) {
+          alert("File uploaded successfully!");
+        } else {
+          alert("File upload failed.");
+        }
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        alert("An error occurred while uploading the file.");
+      }
+    };
+  </script>
+
+</body>
+</html>

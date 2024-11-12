@@ -24,17 +24,40 @@ module "s3_website" {
   block_public_policy     = false
   ignore_public_acls      = false
   restrict_public_buckets = false
+  acl                     = "public-read"
+  policy                  = data.aws_iam_policy_document.s3_bucket_policy.json
+  attach_policy           = true
   website = {
     index_document = "index.html"
   }
 }
 
+data "aws_iam_policy_document" "s3_bucket_policy" {
+  statement {
+    sid    = "PublicReadGetObject"
+    effect = "Allow"
+
+    actions = [
+      "s3:GetObject"
+    ]
+
+    resources = [
+      "${module.s3_website.s3_bucket_arn}/*"
+    ]
+
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
+}
+
 ### Static website source code
 resource "aws_s3_object" "index_html" {
-  bucket = module.s3_website.s3_bucket_id
-  key    = "index.html"
-  source = "../static-website/index.html"
-  acl    = "public-read"
+  bucket       = module.s3_website.s3_bucket_id
+  key          = "index.html"
+  source       = "../static-website/index.html"
+  content_type = "text/html"
 }
 
 ### S3 bucket - upload/source ###
